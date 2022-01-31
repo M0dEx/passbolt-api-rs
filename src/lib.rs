@@ -10,6 +10,7 @@ use reqwest::{Client, ClientBuilder, Response};
 
 pub mod gpg;
 pub mod urls;
+pub mod util;
 
 pub struct Passbolt {
     url: String,
