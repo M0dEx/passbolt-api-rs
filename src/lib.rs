@@ -12,6 +12,7 @@ pub mod gpg;
 pub mod urls;
 pub mod util;
 
+/// Struct representing a session used to access the Passbolt instance
 pub struct Passbolt {
     url: String,
     private_key: SignedSecretKey,
@@ -21,6 +22,7 @@ pub struct Passbolt {
 }
 
 impl Passbolt {
+    /// Creates a new instance of the Passbolt struct
     pub async fn new(
         url: String,
         private_key: SignedSecretKey,
@@ -50,6 +52,7 @@ impl Passbolt {
         Ok(result)
     }
 
+    /// Authenticates using the given private key
     async fn authenticate(&mut self) -> Result<bool> {
         let fingerprint = self
             .private_key
@@ -96,6 +99,7 @@ impl Passbolt {
         Ok(true)
     }
 
+    /// Fetches the CSRF token from the cookie store and puts in into the X-CSRF-Token header
     fn save_csrf_token(&mut self, response: &Response) -> Result<()> {
         for cookie in response.cookies() {
             if cookie.name() == "csrfToken" {
@@ -106,6 +110,7 @@ impl Passbolt {
         Ok(())
     }
 
+    /// Connects to the server using the GET method and returns the response and it's headers
     pub async fn get(&mut self, url: &str) -> Result<(HeaderMap, Value)> {
         let mut complete_url = self.url.clone();
         complete_url.push_str(url);
@@ -125,6 +130,7 @@ impl Passbolt {
         ))
     }
 
+    /// Connects to the server using the POST method, send given data and returns the response and it's headers
     pub async fn post(&mut self, url: &str, data: Value) -> Result<(HeaderMap, Value)> {
         let mut complete_url = self.url.clone();
         complete_url.push_str(url);
@@ -145,10 +151,12 @@ impl Passbolt {
         ))
     }
 
+    /// Returns a reference to the private key
     pub fn private_key(&self) -> &SignedSecretKey {
         &self.private_key
     }
 
+    /// Returns a reference to the private key password
     pub fn private_key_pw(&self) -> &String {
         &self.private_key_pw
     }

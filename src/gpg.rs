@@ -23,6 +23,7 @@ impl ArmoredKey for SignedSecretKey {
     type KeyType = SignedSecretKey;
 }
 
+/// Takes a URL encoded armored message and decodes it into a Message struct
 fn decode_url_armor(encoded_armor: String) -> Result<Message> {
     let decoded = urlencoding::decode(encoded_armor.as_str())?
         .to_string()
@@ -35,6 +36,7 @@ fn decode_url_armor(encoded_armor: String) -> Result<Message> {
     Ok(msg)
 }
 
+/// Decrypts a message with the given key
 pub fn decrypt_message(
     private_key: &SignedSecretKey,
     private_key_pw: &String,
