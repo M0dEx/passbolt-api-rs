@@ -23,12 +23,12 @@ impl ArmoredKey for SignedSecretKey {
     type KeyType = SignedSecretKey;
 }
 
-pub fn decode_url_armor(encoded_armor: String) -> Result<Message> {
+fn decode_url_armor(encoded_armor: String) -> Result<Message> {
     let decoded = urlencoding::decode(encoded_armor.as_str())?
         .to_string()
         .replace("\\+", " ")
-        .replace("\\n", "\n")
-        .into_bytes();
+        .replace("\\r\\n", "\n")
+        .replace("\\n", "\n");
 
     let (msg, _) = Message::from_armor_single(Cursor::new(decoded))?;
 
