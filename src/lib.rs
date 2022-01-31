@@ -144,4 +144,12 @@ impl Passbolt {
             serde_json::from_str(response.text_with_charset("utf-8").await?.as_str())?,
         ))
     }
+
+    pub fn private_key(&self) -> &SignedSecretKey {
+        &self.private_key
+    }
+
+    pub fn private_key_pw(&self) -> &String {
+        &self.private_key_pw
+    }
 }
