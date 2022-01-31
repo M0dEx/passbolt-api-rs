@@ -74,3 +74,6 @@ async fn main() -> Result<()> {
 }
 ```
 ## [Known issues](https://github.com/M0dEx/passbolt-api-rs/issues)
+
+## Disclaimer
+This is a community driven project and it is not associated with Passbolt SA.
