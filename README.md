@@ -48,7 +48,7 @@ async fn main() -> Result<()> {
       SignedSecretKey::from_asc(PRIVATE_KEY).unwrap().0,
       PRIVATE_KEY_PW.to_string(),
     )
-            .await?;
+    .await?;
   
     let res_id = "<resource id>";
   
