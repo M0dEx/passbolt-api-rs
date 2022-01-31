@@ -1,2 +1,3 @@
 [gpg]
-private_key = "YOUR ACCOUNT'S GPG PRIVATE KEY HERE"
+private_key = "YOUR ACCOUNT'S GPG PRIVATE KEY"
+private_key_pw = "YOUR ACCOUNT'S GPG PRIVATE KEY'S PASSWORD"
