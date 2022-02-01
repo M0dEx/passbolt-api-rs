@@ -130,7 +130,27 @@ impl Passbolt {
         ))
     }
 
-    /// Connects to the server using the POST method, send given data and returns the response and it's headers
+    /// Connects to the server using the DELETE method and returns the response and it's headers
+    pub async fn delete(&mut self, url: &str) -> Result<(HeaderMap, Value)> {
+        let mut complete_url = self.url.clone();
+        complete_url.push_str(url);
+
+        let response = self
+            .client
+            .delete(complete_url)
+            .headers(self.headers.clone())
+            .send()
+            .await?;
+
+        self.save_csrf_token(&response)?;
+
+        Ok((
+            response.headers().clone(),
+            serde_json::from_str(response.text_with_charset("utf-8").await?.as_str())?,
+        ))
+    }
+
+    /// Connects to the server using the POST method, sends the given data and returns the response and it's headers
     pub async fn post(&mut self, url: &str, data: Value) -> Result<(HeaderMap, Value)> {
         let mut complete_url = self.url.clone();
         complete_url.push_str(url);
@@ -138,6 +158,27 @@ impl Passbolt {
         let response = self
             .client
             .post(complete_url)
+            .headers(self.headers.clone())
+            .body(data.to_string())
+            .send()
+            .await?;
+
+        self.save_csrf_token(&response)?;
+
+        Ok((
+            response.headers().clone(),
+            serde_json::from_str(response.text_with_charset("utf-8").await?.as_str())?,
+        ))
+    }
+
+    /// Connects to the server using the PUT method, sends the given data and returns the response and it's headers
+    pub async fn put(&mut self, url: &str, data: Value) -> Result<(HeaderMap, Value)> {
+        let mut complete_url = self.url.clone();
+        complete_url.push_str(url);
+
+        let response = self
+            .client
+            .put(complete_url)
             .headers(self.headers.clone())
             .body(data.to_string())
             .send()
