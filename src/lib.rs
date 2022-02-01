@@ -3,7 +3,6 @@ use serde_json::{json, Value};
 
 use crate::gpg::decrypt_message;
 use crate::models::resource::{Resource, Secret};
-use crate::models::SerdeJSON;
 use crate::urls::{LOGIN_URL, ME_URL, RESOURCE_URL, SECRET_URL};
 use crate::util::format;
 use pgp::types::{KeyTrait, SecretKeyTrait};
@@ -108,6 +107,7 @@ impl Passbolt {
     fn save_csrf_token(&mut self, response: &Response) -> Result<()> {
         for cookie in response.cookies() {
             if cookie.name() == "csrfToken" {
+                println!("CSRF Token: {}", cookie.value().to_string());
                 self.headers.insert("X-CSRF-Token", cookie.value().parse()?);
             }
         }
@@ -116,7 +116,7 @@ impl Passbolt {
     }
 
     /// Connects to the server using the GET method and returns the response and it's headers
-    pub async fn get(&mut self, url: &str) -> Result<(HeaderMap, Value)> {
+    pub async fn get(&self, url: &str) -> Result<(HeaderMap, Value)> {
         let mut complete_url = self.url.clone();
         complete_url.push_str(url);
 
@@ -126,8 +126,6 @@ impl Passbolt {
             .headers(self.headers.clone())
             .send()
             .await?;
-
-        self.save_csrf_token(&response)?;
 
         Ok((
             response.headers().clone(),
@@ -198,23 +196,23 @@ impl Passbolt {
     }
 
     /// Returns the resource specified by it's ID
-    pub async fn get_resource(&mut self, resource_id: &str) -> Result<Resource> {
-        Resource::deserialize(
-            &self
-                .get(format(RESOURCE_URL, &[resource_id]).as_str())
+    pub async fn get_resource(&self, resource_id: &str) -> Result<Resource> {
+        Ok(serde_json::from_value(
+            self.get(format(RESOURCE_URL, &[resource_id]).as_str())
                 .await?
-                .1["body"],
-        )
+                .1["body"]
+                .clone(),
+        )?)
     }
 
     /// Returns the secret specified by it's resource's ID
-    pub async fn get_secret(&mut self, resource_id: &str) -> Result<Secret> {
-        Secret::deserialize(
-            &self
-                .get(format(SECRET_URL, &[resource_id]).as_str())
+    pub async fn get_secret(&self, resource_id: &str) -> Result<Secret> {
+        Ok(serde_json::from_value(
+            self.get(format(SECRET_URL, &[resource_id]).as_str())
                 .await?
-                .1["body"],
-        )
+                .1["body"]
+                .clone(),
+        )?)
     }
 
     /// Returns a reference to the private key
