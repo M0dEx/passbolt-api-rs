@@ -7,14 +7,14 @@ This is a tool to interact with [Passbolt API](https://help.passbolt.com/api) us
   * [X] Authentication
   * [X] PGP message decryption
   * [X] GET and POST methods
-  * [ ] PUT, DELETE methods
+  * [X] PUT, DELETE methods
 * Advanced functions
   * [ ] Types
     * [ ] Users
     * [ ] Groups
     * [ ] Permissions
-    * [ ] Resources
-    * [ ] Secrets
+    * [X] Resources
+    * [X] Secrets
     * [ ] Folders
     * [ ] Actions
     * [ ] Comments
@@ -52,23 +52,28 @@ async fn main() -> Result<()> {
   
     let res_id = "<resource id>";
   
-    let resource = passbolt
+    let resource_json = passbolt
             .get(format(RESOURCE_URL, &[res_id]).as_str())
             .await?
             .1["body"]
             .to_string();
   
-    let secret = passbolt
+    let secret_data = passbolt
             .get(format(SECRET_URL, &[res_id]).as_str())
             .await?
             .1["body"]["data"]
             .to_string();
   
-    println!(
-      "{}\n{}",
-      resource,
-      decrypt_message(passbolt.private_key(), passbolt.private_key_pw(), secret)?
-    );
+    let resource: Resource = passbolt
+            .get_resource(res_id)
+            .await?;
+  
+    let secret: Secret = passbolt
+            .get_secret(res_id)
+            .await?;
+  
+    println!("{}", resource_json);
+    println!("{}", decrypt_message(passbolt.private_key(), passbolt.private_key_pw(), secret_data)?);
   
     Ok(())
 }
