@@ -2,13 +2,18 @@ use anyhow::{Error, Result};
 use serde_json::{json, Value};
 
 use crate::gpg::decrypt_message;
-use crate::urls::{LOGIN_URL, ME_URL};
+use crate::models::resource::{Resource, Secret};
+use crate::models::SerdeJSON;
+use crate::urls::{LOGIN_URL, ME_URL, RESOURCE_URL, SECRET_URL};
+use crate::util::format;
 use pgp::types::{KeyTrait, SecretKeyTrait};
 use pgp::SignedSecretKey;
 use reqwest::header::HeaderMap;
 use reqwest::{Client, ClientBuilder, Response};
 
 pub mod gpg;
+pub mod json;
+pub mod models;
 pub mod urls;
 pub mod util;
 
@@ -190,6 +195,26 @@ impl Passbolt {
             response.headers().clone(),
             serde_json::from_str(response.text_with_charset("utf-8").await?.as_str())?,
         ))
+    }
+
+    /// Returns the resource specified by it's ID
+    pub async fn get_resource(&mut self, resource_id: &str) -> Result<Resource> {
+        Resource::deserialize(
+            &self
+                .get(format(RESOURCE_URL, &[resource_id]).as_str())
+                .await?
+                .1["body"],
+        )
+    }
+
+    /// Returns the secret specified by it's resource's ID
+    pub async fn get_secret(&mut self, resource_id: &str) -> Result<Secret> {
+        Secret::deserialize(
+            &self
+                .get(format(SECRET_URL, &[resource_id]).as_str())
+                .await?
+                .1["body"],
+        )
     }
 
     /// Returns a reference to the private key
