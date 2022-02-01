@@ -8,6 +8,7 @@ pub struct Resource {
     username: String,
     uri: String,
     deleted: bool,
+    resource_type_id: String,
     #[serde(rename(serialize = "created", deserialize = "created"))]
     created_at: DateTime<Local>,
     #[serde(rename(serialize = "modified", deserialize = "modified"))]
@@ -35,6 +36,7 @@ impl Resource {
         username: String,
         uri: String,
         deleted: bool,
+        resource_type_id: String,
         created_at: DateTime<Local>,
         modified_at: DateTime<Local>,
         created_by: String,
@@ -46,6 +48,7 @@ impl Resource {
             username,
             uri,
             deleted,
+            resource_type_id,
             created_at,
             modified_at,
             created_by,
