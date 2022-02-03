@@ -1,8 +1,13 @@
+use crate::models::action::Action;
 use crate::models::secret::Secret;
+use crate::urls::ACTION_URL;
+use crate::util::format;
 use crate::Passbolt;
 use anyhow::Result;
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
+
+const PAGE_LIMIT: u32 = 100;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Resource {
@@ -51,5 +56,41 @@ impl Resource {
     /// Returns the secret associated with the resource
     pub async fn get_secret(&self, passbolt: &Passbolt) -> Result<Secret> {
         Ok(passbolt.get_secret(self.id.as_str()).await?)
+    }
+
+    /// Returns the complete history of the resource
+    pub async fn get_history(&self, passbolt: &Passbolt) -> Result<Vec<Action>> {
+        let mut history: Vec<Action> = Vec::new();
+        let mut page: u32 = 1;
+
+        loop {
+            let mut history_page: Vec<Action> = serde_json::from_value(
+                passbolt
+                    .get(
+                        format(
+                            ACTION_URL,
+                            &[
+                                self.id.as_str(),
+                                page.to_string().as_str(),
+                                PAGE_LIMIT.to_string().as_str(),
+                            ],
+                        )
+                        .as_str(),
+                    )
+                    .await?
+                    .1["body"]
+                    .clone(),
+            )?;
+
+            if history_page.is_empty() {
+                break;
+            }
+
+            history.append(&mut history_page);
+
+            page += 1;
+        }
+
+        Ok(history)
     }
 }

@@ -8,3 +8,5 @@ pub const RESOURCE_URL: &str = "/resources/{}.json";
 pub const SECRET_URL: &str = "/secrets/resource/{}.json";
 
 pub const USER_URL: &str = "/users/{}.json";
+
+pub const ACTION_URL: &str = "/actionlog/resource/{}.json?page={}&limit={}";
