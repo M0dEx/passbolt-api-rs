@@ -2,8 +2,10 @@ use anyhow::{Error, Result};
 use serde_json::{json, Value};
 
 use crate::gpg::decrypt_message;
-use crate::models::resource::{Resource, Secret};
-use crate::urls::{LOGIN_URL, ME_URL, RESOURCE_URL, SECRET_URL};
+use crate::models::resource::Resource;
+use crate::models::secret::Secret;
+use crate::models::user::User;
+use crate::urls::{LOGIN_URL, ME_URL, RESOURCE_URL, SECRET_URL, USER_URL};
 use crate::util::format;
 use pgp::types::{KeyTrait, SecretKeyTrait};
 use pgp::SignedSecretKey;
@@ -212,6 +214,13 @@ impl Passbolt {
                 .await?
                 .1["body"]
                 .clone(),
+        )?)
+    }
+
+    /// Returns the user specified by their ID
+    pub async fn get_user(&self, user_id: &str) -> Result<User> {
+        Ok(serde_json::from_value(
+            self.get(format(USER_URL, &[user_id]).as_str()).await?.1["body"].clone(),
         )?)
     }
 
