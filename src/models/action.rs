@@ -6,14 +6,14 @@ use serde_json::Value;
 #[derive(Debug, Serialize, Deserialize, Clone)]
 /// Struct representing a Passbolt action (read, edit, ...)
 pub struct Action {
-    id: String,
-    action_log_id: String,
+    pub id: String,
+    pub action_log_id: String,
     #[serde(rename = "type")]
-    action_type: String,
+    pub action_type: String,
     #[serde(rename = "created")]
-    created_at: DateTime<Local>,
+    pub created_at: DateTime<Local>,
     #[serde(rename = "creator", deserialize_with = "deserialize_creator")]
-    creator_id: String,
+    pub creator_id: String,
 }
 
 /// Deserializes the creator id from it's JSON object

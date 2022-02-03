@@ -1,5 +1,6 @@
 use crate::models::action::Action;
 use crate::models::secret::Secret;
+use crate::models::user::User;
 use crate::urls::ACTION_URL;
 use crate::util::format;
 use crate::Passbolt;
@@ -10,19 +11,20 @@ use serde::{Deserialize, Serialize};
 const PAGE_LIMIT: u32 = 100;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+/// Struct representing a Passbolt resource
 pub struct Resource {
-    id: String,
-    name: String,
-    username: String,
-    uri: String,
-    deleted: bool,
-    resource_type_id: String,
+    pub id: String,
+    pub name: String,
+    pub username: String,
+    pub uri: String,
+    pub deleted: bool,
+    pub resource_type_id: String,
     #[serde(rename = "created")]
-    created_at: DateTime<Local>,
+    pub created_at: DateTime<Local>,
     #[serde(rename = "modified")]
-    modified_at: DateTime<Local>,
-    created_by: String,
-    modified_by: String,
+    pub modified_at: DateTime<Local>,
+    pub created_by: String,
+    pub modified_by: String,
 }
 
 impl Resource {
@@ -54,12 +56,12 @@ impl Resource {
     }
 
     /// Returns the secret associated with the resource
-    pub async fn get_secret(&self, passbolt: &Passbolt) -> Result<Secret> {
+    pub async fn secret(&self, passbolt: &Passbolt) -> Result<Secret> {
         Ok(passbolt.get_secret(self.id.as_str()).await?)
     }
 
     /// Returns the complete history of the resource
-    pub async fn get_history(&self, passbolt: &Passbolt) -> Result<Vec<Action>> {
+    pub async fn history(&self, passbolt: &Passbolt) -> Result<Vec<Action>> {
         let mut history: Vec<Action> = Vec::new();
         let mut page: u32 = 1;
 

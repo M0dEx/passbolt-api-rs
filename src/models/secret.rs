@@ -5,20 +5,22 @@ use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+/// Struct representing a Passbolt secret
 pub struct Secret {
-    id: String,
-    user_id: String,
+    pub id: String,
+    pub user_id: String,
     pub data: String,
     #[serde(rename = "created")]
-    created_at: DateTime<Local>,
+    pub created_at: DateTime<Local>,
     #[serde(rename = "modified")]
-    modified_at: DateTime<Local>,
+    pub modified_at: DateTime<Local>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+/// Struct representing a Passbolt secret's data
 pub struct SecretData {
-    password: String,
-    description: String,
+    pub password: String,
+    pub description: String,
 }
 
 impl Secret {
@@ -39,6 +41,7 @@ impl Secret {
         }
     }
 
+    /// Decrypts the encrypted data from secret
     pub fn decrypt_data(&self, passbolt: &Passbolt) -> Result<SecretData> {
         Ok(serde_json::from_str(
             decrypt_message(
