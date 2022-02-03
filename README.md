@@ -10,7 +10,7 @@ This is a tool to interact with [Passbolt API](https://help.passbolt.com/api) us
   * [X] PUT, DELETE methods
 * Advanced functions
   * [ ] Types
-    * [ ] Users
+    * [X] Users
     * [ ] Groups
     * [ ] Permissions
     * [X] Resources
