@@ -1,3 +1,6 @@
+use crate::models::secret::Secret;
+use crate::Passbolt;
+use anyhow::Result;
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 
@@ -43,5 +46,10 @@ impl Resource {
             created_by,
             modified_by,
         }
+    }
+
+    /// Returns the secret associated with the resource
+    pub async fn get_secret(&self, passbolt: &Passbolt) -> Result<Secret> {
+        Ok(passbolt.get_secret(self.id.as_str()).await?)
     }
 }
