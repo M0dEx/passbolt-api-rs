@@ -95,4 +95,14 @@ impl Resource {
 
         Ok(history)
     }
+
+    /// Returns all actions recorded for this resource created by the specified user
+    pub async fn history_user(&self, passbolt: &Passbolt, user_id: &String) -> Result<Vec<Action>> {
+        let history = self.history(passbolt).await?;
+
+        Ok(history
+            .into_iter()
+            .filter(|action| action.creator_id == *user_id)
+            .collect())
+    }
 }
