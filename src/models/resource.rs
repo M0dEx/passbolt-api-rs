@@ -1,6 +1,5 @@
 use crate::models::action::Action;
 use crate::models::secret::Secret;
-use crate::models::user::User;
 use crate::urls::ACTION_URL;
 use crate::util::format;
 use crate::Passbolt;

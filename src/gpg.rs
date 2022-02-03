@@ -3,6 +3,7 @@ use anyhow::{Context, Result};
 use pgp::ser::Serialize;
 use pgp::types::KeyTrait;
 use pgp::{Deserializable, Message, SignedPublicKey, SignedSecretKey};
+use secstr::SecUtf8;
 use std::collections::BTreeMap;
 use std::io::Cursor;
 
@@ -39,17 +40,21 @@ fn decode_url_armor(encoded_armor: String) -> Result<Message> {
 /// Decrypts a message with the given key
 pub fn decrypt_message(
     private_key: &SignedSecretKey,
-    private_key_pw: &String,
+    private_key_pw: &SecUtf8,
     encrypted_msg: String,
-) -> Result<String> {
+) -> Result<SecUtf8> {
     let msg = decode_url_armor(encrypted_msg)?;
 
-    let (decrypter, _) = msg.decrypt(|| "".into(), || private_key_pw.clone(), &[private_key])?;
+    let (decrypter, _) = msg.decrypt(
+        || "".into(),
+        || private_key_pw.clone().into_unsecure(),
+        &[private_key],
+    )?;
 
     let result = decrypter.collect::<pgp::errors::Result<Vec<_>>>()?;
 
     match result[0].get_content()? {
-        Some(message) => Ok(String::from_utf8(message)?),
-        None => Ok(String::new()),
+        Some(message) => Ok(SecUtf8::from(String::from_utf8(message)?)),
+        None => Ok(SecUtf8::from(String::new())),
     }
 }

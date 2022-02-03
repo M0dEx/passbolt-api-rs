@@ -11,6 +11,7 @@ use pgp::types::{KeyTrait, SecretKeyTrait};
 use pgp::SignedSecretKey;
 use reqwest::header::HeaderMap;
 use reqwest::{Client, ClientBuilder, Response};
+use secstr::SecUtf8;
 
 pub mod gpg;
 pub mod models;
@@ -20,8 +21,8 @@ pub mod util;
 /// Struct representing a session used to access the Passbolt instance
 pub struct Passbolt {
     url: String,
-    private_key: SignedSecretKey,
-    private_key_pw: String,
+    pub private_key: SignedSecretKey,
+    pub private_key_pw: SecUtf8,
     client: Client,
     headers: HeaderMap,
 }
@@ -31,7 +32,7 @@ impl Passbolt {
     pub async fn new(
         url: String,
         private_key: SignedSecretKey,
-        private_key_pw: String,
+        private_key_pw: SecUtf8,
     ) -> Result<Self> {
         let mut result = Passbolt {
             url,
@@ -95,7 +96,7 @@ impl Passbolt {
             json!({
                 "gpg_auth": {
                     "keyid": fingerprint,
-                    "user_token_result": token
+                    "user_token_result": token.unsecure()
                 }
             }),
         )
@@ -221,15 +222,5 @@ impl Passbolt {
         Ok(serde_json::from_value(
             self.get(format(USER_URL, &[user_id]).as_str()).await?.1["body"].clone(),
         )?)
-    }
-
-    /// Returns a reference to the private key
-    pub fn private_key(&self) -> &SignedSecretKey {
-        &self.private_key
-    }
-
-    /// Returns a reference to the private key password
-    pub fn private_key_pw(&self) -> &String {
-        &self.private_key_pw
     }
 }
