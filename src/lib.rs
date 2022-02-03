@@ -46,7 +46,7 @@ impl Passbolt {
             .headers
             .insert("Content-Type", "application/json".parse()?);
 
-        let mut result = match result.authenticate().await? {
+        let result = match result.authenticate().await? {
             true => Ok(result),
             false => Err(Error::msg("Could not authenticate")),
         }?;
