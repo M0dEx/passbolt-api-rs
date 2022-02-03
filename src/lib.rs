@@ -13,7 +13,6 @@ use reqwest::header::HeaderMap;
 use reqwest::{Client, ClientBuilder, Response};
 
 pub mod gpg;
-pub mod json;
 pub mod models;
 pub mod urls;
 pub mod util;
