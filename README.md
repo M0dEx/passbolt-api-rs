@@ -9,15 +9,16 @@ This is a tool to interact with [Passbolt API](https://help.passbolt.com/api) us
   * [X] GET and POST methods
   * [X] PUT, DELETE methods
 * Advanced functions
-  * [ ] Types
+  * [ ] Structs
     * [X] Users
     * [ ] Groups
     * [ ] Permissions
     * [X] Resources
     * [X] Secrets
     * [ ] Folders
-    * [ ] Actions
+    * [X] Actions
     * [ ] Comments
+  * [ ] Methods for natural interaction with the structs
 * [ ] Configuration file
 * [ ] CLI
 
@@ -58,15 +59,19 @@ async fn main() -> Result<()> {
             .await?;
   
     let secret: Secret = resource
-            .get_secret(&passbolt)
+            .secret(&passbolt)
             .await?;
   
     let user: User = passbolt
             .get_user(user_id)
             .await?;
   
-    println!("{:?}", resource);
-    println!("{:?}", secret.decrypt_data(&passbolt)?);
+    let history: Vec<Action> = resource
+            .history(&passbolt)
+            .await?;
+  
+    println!("{:#?}", resource);
+    println!("{:#?}", secret.decrypt_data(&passbolt)?);
   
     Ok(())
 }
